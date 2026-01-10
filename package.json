@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:webhook": "npx ngrok http --domain=inventive-laurinda-clinkingly.ngrok-free.dev 3000",
+    "dev:all": "concurrently \"bun run dev\" \"npm run dev:webhook\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -42,6 +44,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "concurrently": "9.1.2",
     "date-fns": "^4.1.0",
     "dotenv": "16.4.7",
     "drizzle-orm": "0.39.0",
@@ -57,6 +60,7 @@
     "react-resizable-panels": "^4.3.3",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
+    "svix": "1.45.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
