@@ -21,7 +21,7 @@ export default function RootLayout({
           ${inter.className}
           
           antialiased
-          dark
+          
           bg-background
           text-foreground
         `}
