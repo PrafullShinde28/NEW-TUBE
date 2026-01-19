@@ -1,7 +1,7 @@
 const Page = ()=>{
     return(
         <div>
-            Only logged In users should see this
+            Studio
         </div>
     )
 }

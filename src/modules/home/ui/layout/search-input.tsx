@@ -1,6 +1,3 @@
-
-
-
 import {  SearchIcon } from "lucide-react"
 
 export const SearchInput = () => {
