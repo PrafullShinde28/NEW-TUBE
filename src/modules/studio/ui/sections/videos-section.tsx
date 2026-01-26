@@ -16,6 +16,8 @@ import{
 import Link from "next/link";
 import { Video } from "lucide-react";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
+import { snakesCaseToTitle } from "@/lib/utils";
+import { format } from "date-fns";
 
 export const VideoSection=()=>{
     return(
@@ -63,12 +65,22 @@ export const VideoSectionSuspense = ()=>{
                                             duration={video.duration || 0}
                                             />
                                         </div>
+                                        <div className="flex flex-col overflow-hidden gap-y-1">
+                                            <span className="text-sm line-clamp-1">{video.title}</span>
+                                            <span className="text-sm line-clamp-1">{video.description || "No Description"}</span>
+                                        </div>
                                     </div>
                                 </TableCell>
 
                                 <TableCell>visibility</TableCell>
-                                <TableCell>status</TableCell>
-                                <TableCell>date</TableCell>
+                                <TableCell>
+                                    <div className="flex items-center">
+                                        {snakesCaseToTitle(video.muxStatus || "error")}
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-sm truncate">
+                                    {format(new Date(video.createdAt),"d MMM yyyy")}
+                                </TableCell>
 
                                 <TableCell className="text-right">views</TableCell>
                                 <TableCell className="text-right">comments</TableCell>
