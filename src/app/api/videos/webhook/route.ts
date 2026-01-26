@@ -60,13 +60,29 @@ export const POST = async (request: Request) => {
 
       const playbackId = data.playback_ids?.[0]?.id ?? null;
 
+      if(!data.upload_id){
+         return new Response("No upload ID found", { status: 400 });
+      }
+
+      if(!playbackId){
+        return new Response("No playback ID found", { status: 400 });
+      }
+
+      const thumbnailUrl= `https://image.mux.com/${playbackId}/thumbnail.jpg`;
+      const previewUrl =  `https://image.mux.com/${playbackId}/animated.gif`;
+      const duration = data.duration ? Math.round(data.duration*1000) : 0;
+
       await db
         .update(videos)
         .set({
           muxStatus: data.status,
           muxPlaybackId: playbackId,
+          muxAssetId : data.id,
+          thumbnailUrl ,
+          previewUrl,
+          duration
         })
-        .where(eq(videos.muxAssetId, data.id));
+        .where(eq(videos.muxUploadId, data.upload_id));
 
       break;
     }

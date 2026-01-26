@@ -14,6 +14,8 @@ import{
 
 }from "@/components/ui/table"
 import Link from "next/link";
+import { Video } from "lucide-react";
+import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 
 export const VideoSection=()=>{
     return(
@@ -50,14 +52,18 @@ export const VideoSectionSuspense = ()=>{
                     <TableBody>
                     {videos.pages.flatMap((page)=>page.items).map((video)=>(
                         <Link href={`/studio/videos/${video.id}`} key={video.id} legacyBehavior>
-                            <TableRow key={video.id} className="hover:bg-muted/50">
-                                 <TableCell className="pl-6 w-[510px] font-medium">
-                                    <Link
-                                        href={`/studio/videos/${video.id}`}
-                                        className="block w-full"
-                                    >
-                                        {video.title}
-                                    </Link>
+                            <TableRow className="cursor-pointer">
+                                 <TableCell>
+                                    <div className="flex items-center gap-4 ">
+                                        <div className="relative aspect-video w-36 shrink-0">
+                                            <VideoThumbnail 
+                                            imageUrl={video.thumbnailUrl} 
+                                            previewUrl={video.previewUrl}
+                                            title = {video.title}
+                                            duration={video.duration || 0}
+                                            />
+                                        </div>
+                                    </div>
                                 </TableCell>
 
                                 <TableCell>visibility</TableCell>
