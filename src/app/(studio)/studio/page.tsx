@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { HydrateClient, trpc } from "@/trpc/server";
 import { StudioView } from "@/modules/studio/ui/views/studio-view";
 import { DEFAULT_LIMIT } from "@/constants";
