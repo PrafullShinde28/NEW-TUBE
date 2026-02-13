@@ -10,6 +10,13 @@ interface InputType {
   userId: string;
 }
 
+const DESCRIPTION_SYSTEM_PROMPT = `Your task is to summarize the transcript of a video. Please follow these guidelines:
+- Be brief. Condense the content into a summary that captures the key points and main ideas without losing important details.
+- Avoid jargon or overly complex language unless necessary for the context.
+- Focus on the most critical information, ignoring filler, repetitive statements, or irrelevant tangents.
+- ONLY return the summary, no other text, annotations, or comments.
+- Aim for a summary that is 3-5 sentences long and no more than 200 characters.`;
+
 export const { POST } = serve(async (context) => {
   const { videoId, userId } = context.requestPayload as InputType;
 
@@ -51,7 +58,7 @@ export const { POST } = serve(async (context) => {
   });
 
   /* ---------------- STEP 3: GENERATE TITLE USING CLOUDFLARE AI ---------------- */
-  const title = await context.run("generate-title", async () => {
+  const description = await context.run("generate-description", async () => {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/meta/llama-3-8b-instruct`,
       {
@@ -65,7 +72,7 @@ export const { POST } = serve(async (context) => {
             {
               role: "system",
               content:
-                "Generate a natural YouTube video title under 8 words based on the transcript. Return only the title.",
+                DESCRIPTION_SYSTEM_PROMPT,
             },
             {
               role: "user",
@@ -95,7 +102,7 @@ export const { POST } = serve(async (context) => {
     await db
       .update(videos)
       .set({
-        title: title,
+        description: description || video.description,
         updatedAt: new Date(), // frontend polling detects change
       })
       .where(and(eq(videos.id, video.id), eq(videos.userId, video.userId)));

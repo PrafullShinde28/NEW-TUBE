@@ -9,7 +9,48 @@ import { UTApi } from "uploadthing/server";
 import { workflow } from "@/lib/workflow";
 
 export const videosRouter = createTRPCRouter({
-    
+     generateDescription : protectedProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .mutation(async ({ ctx, input }) => {
+    const { id: userId } = ctx.user;
+
+    try {
+      const result = await workflow.trigger({
+        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/description`,
+        body: { userId, videoId: input.id },
+      });
+
+      return result.workflowRunId;
+
+    } catch (err) {
+      console.error("WORKFLOW FAILED:", err);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Workflow trigger failed",
+      });
+    }
+  }),
+    generateTitle : protectedProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .mutation(async ({ ctx, input }) => {
+    const { id: userId } = ctx.user;
+
+    try {
+      const result = await workflow.trigger({
+        url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/title`,
+        body: { userId, videoId: input.id },
+      });
+
+      return result.workflowRunId;
+
+    } catch (err) {
+      console.error("WORKFLOW FAILED:", err);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Workflow trigger failed",
+      });
+    }
+  }),
     generateThumbnail : protectedProcedure
   .input(z.object({ id: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {

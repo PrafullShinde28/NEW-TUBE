@@ -1,5 +1,5 @@
 "use client";
-
+import {videos} from "@/db/schema"
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/client";
 import { Suspense, useState } from "react";
@@ -16,6 +16,7 @@ import {
   CopyIcon,
   Globe2Icon,
   ImagePlayIcon,
+  Loader2Icon,
   LockIcon,
   MoreVerticalIcon,
   RotateCcwIcon,
@@ -110,9 +111,10 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
       toast.error("Failed to restore thumbnail");
     },
   });
- const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
+  
+  const generateDescription = trpc.videos.generateDescription.useMutation({
   onSuccess: async () => {
-    toast.success("Generating in background...");
+    toast.success("Generating description in background...");
 
     // remember old updatedAt
     const before = video?.[0]?.updatedAt;
@@ -133,7 +135,69 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
         await utils.studio.getOne.invalidate({ id: videoId });
         await utils.studio.getMany.invalidate();
 
-        toast.success("Updated from background!");
+        toast.success("Updated description from background!");
+      }
+
+      if (attempts > 20) clearInterval(interval);
+    }, 3000);
+  },
+});
+
+  const generateTitle = trpc.videos.generateTitle.useMutation({
+  onSuccess: async () => {
+    toast.success("Generating title in background...");
+
+    // remember old updatedAt
+    const before = video?.[0]?.updatedAt;
+
+    let attempts = 0;
+
+    const interval = setInterval(async () => {
+      attempts++;
+
+      const fresh = await utils.studio.getOne.fetch({ id: videoId });
+
+      const after = fresh?.[0]?.updatedAt;
+
+      // stop when DB changed
+      if (after && before && new Date(after).getTime() !== new Date(before).getTime()) {
+        clearInterval(interval);
+
+        await utils.studio.getOne.invalidate({ id: videoId });
+        await utils.studio.getMany.invalidate();
+
+        toast.success("Updated title from background!");
+      }
+
+      if (attempts > 20) clearInterval(interval);
+    }, 3000);
+  },
+});
+
+ const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
+  onSuccess: async () => {
+    toast.success("Generating thumbnail in background...");
+
+    // remember old updatedAt
+    const before = video?.[0]?.updatedAt;
+
+    let attempts = 0;
+
+    const interval = setInterval(async () => {
+      attempts++;
+
+      const fresh = await utils.studio.getOne.fetch({ id: videoId });
+
+      const after = fresh?.[0]?.updatedAt;
+
+      // stop when DB changed
+      if (after && before && new Date(after).getTime() !== new Date(before).getTime()) {
+        clearInterval(interval);
+
+        await utils.studio.getOne.invalidate({ id: videoId });
+        await utils.studio.getMany.invalidate();
+
+        toast.success("Updated thumbnail from background!");
       }
 
       if (attempts > 20) clearInterval(interval);
@@ -232,7 +296,22 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-x-2">
+                        Title
+                        <Button
+                        size="icon"
+                        variant="outline"
+                        type="button"
+                        className="rounded-full size-6 [&_svg]:size-3"
+                        onClick={()=> generateTitle.mutate({id : videoId})}
+                        disabled={generateTitle.isPending  || !video[0].muxTrackId}
+                        >
+                          {generateTitle.isPending ?  <Loader2Icon className="animate-spin "/> : <SparklesIcon/>}
+                            
+                        </Button>
+                      </div>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -251,7 +330,22 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-x-2">
+                        Discription
+                        <Button
+                        size="icon"
+                        variant="outline"
+                        type="button"
+                        className="rounded-full size-6 [&_svg]:size-3"
+                        onClick={()=> generateDescription.mutate({id : videoId})}
+                        disabled={generateDescription.isPending || !video[0].muxTrackId}
+                        >
+                          {generateDescription.isPending ?  <Loader2Icon className="animate-spin "/> : <SparklesIcon/>}
+                            
+                        </Button>
+                      </div>
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
