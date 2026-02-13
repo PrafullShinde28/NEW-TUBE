@@ -1,4 +1,5 @@
 "use client";
+import { Textarea } from "@/components/ui/textarea";
 import {videos} from "@/db/schema"
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/client";
@@ -26,7 +27,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
   Form,
   FormControl,
@@ -52,11 +53,99 @@ import Image from "next/image";
 import { THUMBNAIL_FALLBACK_URL } from "@/modules/videos/constants";
 import { Thumb } from "@radix-ui/react-scroll-area";
 import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
-
+import {ThumbnailGenerateModal} from "../components/thumbnail-generate-modal"
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FormSectionProps {
   videoId: string;
 }
+
+
+
+export const FormSectionSkeleton = () => {
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-6 space-y-8">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+        <Skeleton className="h-9 w-20 rounded-md" />
+      </div>
+
+      {/* MAIN GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+        {/* LEFT SIDE FORM */}
+        <div className="lg:col-span-3 space-y-8">
+
+          {/* TITLE */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+
+          {/* DESCRIPTION */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-40 w-full rounded-md" />
+          </div>
+
+          {/* THUMBNAIL */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-[84px] w-[153px] rounded-md" />
+          </div>
+
+          {/* CATEGORY */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full rounded-md" />
+          </div>
+
+        </div>
+
+        {/* RIGHT SIDE PANEL */}
+        <div className="lg:col-span-2">
+          <div className="border rounded-xl overflow-hidden space-y-4 p-4">
+
+            {/* VIDEO PLAYER */}
+            <Skeleton className="aspect-video w-full rounded-lg" />
+
+            {/* LINK */}
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+
+            {/* STATUS */}
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+
+            {/* SUBTITLE STATUS */}
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+
+            {/* VISIBILITY */}
+            <div className="space-y-2 pt-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-10 w-full rounded-md" />
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 
 export const FormSection = ({ videoId }: FormSectionProps) => {
   return (
@@ -68,9 +157,6 @@ export const FormSection = ({ videoId }: FormSectionProps) => {
   );
 };
 
-const FormSectionSkeleton = () => {
-  return <p>Loading...</p>;
-};
 
 const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
   const router = useRouter();
@@ -78,6 +164,7 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
   const utils = trpc.useUtils();
   const [thumbailModalOpen, setThumbnailModalOpen] = useState(false);
+  const [thumbailGenerateModalOpen, setThumbnaiGeneratelModalOpen] = useState(false);
 
   const update = trpc.videos.update.useMutation({
     onSuccess: () => {
@@ -174,36 +261,6 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
   },
 });
 
- const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
-  onSuccess: async () => {
-    toast.success("Generating thumbnail in background...");
-
-    // remember old updatedAt
-    const before = video?.[0]?.updatedAt;
-
-    let attempts = 0;
-
-    const interval = setInterval(async () => {
-      attempts++;
-
-      const fresh = await utils.studio.getOne.fetch({ id: videoId });
-
-      const after = fresh?.[0]?.updatedAt;
-
-      // stop when DB changed
-      if (after && before && new Date(after).getTime() !== new Date(before).getTime()) {
-        clearInterval(interval);
-
-        await utils.studio.getOne.invalidate({ id: videoId });
-        await utils.studio.getMany.invalidate();
-
-        toast.success("Updated thumbnail from background!");
-      }
-
-      if (attempts > 20) clearInterval(interval);
-    }, 3000);
-  },
-});
 
 
 
@@ -241,11 +298,20 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
 
   return (
   <>
+
+    <ThumbnailGenerateModal
+    open={thumbailGenerateModalOpen}
+     onOpenChange={setThumbnaiGeneratelModalOpen}
+     videoId={videoId}
+    />
+
     <ThumbnailUploadModal
      open={thumbailModalOpen}
      onOpenChange={setThumbnailModalOpen}
      videoId={videoId}
     />
+
+    
 
     <Form {...form}>
       <div className="max-w-7xl mx-auto px-6 py-6">
@@ -389,7 +455,7 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
                                 Chage
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                              onClick={()=>generateThumbnail.mutate({id: videoId})}
+                              onClick={()=>setThumbnaiGeneratelModalOpen(true)}
                               >
                                 <SparklesIcon className="size-4 mr-1"/>
                                 AI-generate
