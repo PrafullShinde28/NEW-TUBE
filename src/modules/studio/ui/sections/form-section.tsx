@@ -110,17 +110,38 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
       toast.error("Failed to restore thumbnail");
     },
   });
- 
-   const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
-    onSuccess: () => {
-      toast.success( 
-        "Background thumbnail generation started",
-       { description: "The thumbnail is being generated in the background. It may take a few minutes to complete."});
-    },
-    onError: () => {
-      toast.error("Failed to generate thumbnail");
-    },
-  });
+ const generateThumbnail = trpc.videos.generateThumbnail.useMutation({
+  onSuccess: async () => {
+    toast.success("Generating in background...");
+
+    // remember old updatedAt
+    const before = video?.[0]?.updatedAt;
+
+    let attempts = 0;
+
+    const interval = setInterval(async () => {
+      attempts++;
+
+      const fresh = await utils.studio.getOne.fetch({ id: videoId });
+
+      const after = fresh?.[0]?.updatedAt;
+
+      // stop when DB changed
+      if (after && before && new Date(after).getTime() !== new Date(before).getTime()) {
+        clearInterval(interval);
+
+        await utils.studio.getOne.invalidate({ id: videoId });
+        await utils.studio.getMany.invalidate();
+
+        toast.success("Updated from background!");
+      }
+
+      if (attempts > 20) clearInterval(interval);
+    }, 3000);
+  },
+});
+
+
 
   const form = useForm<z.infer<typeof videoUpdateSchema>>({
     resolver: zodResolver(videoUpdateSchema),
