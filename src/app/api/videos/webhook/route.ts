@@ -120,7 +120,7 @@ export const POST = async (request: Request) => {
 
       break;
 
-     } 
+     }
 
      case "video.asset.track.ready" :{
          const data = payload.data as VideoAssetTrackReadyWebhookEvent["data"]&{

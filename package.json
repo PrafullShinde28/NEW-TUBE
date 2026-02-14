@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev:server": "next build && next start",
+  "dev": "next dev",
+  "dev:server": "next dev",
   "dev:webhook": "wait-on http://localhost:3000 && ngrok http --domain=inventive-laurinda-clinkingly.ngrok-free.dev 3000",
   "dev:all": "concurrently -k -n SERVER,NGROK -c green,cyan \"bun run dev:server\" \"bun run dev:webhook\"",
   "build": "next build",
