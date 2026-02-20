@@ -1,6 +1,6 @@
 import { VideoSection } from "@/modules/videos/ui/sections/video-section"
 import { SuggestionsSection } from "../components/suggestion-section"
-import { CommentsSection } from "../components/comments-sections"
+import { CommentsSection } from "../sections/comments-sections"
 
 interface VideoViewsProps {
     videoId : string
@@ -16,7 +16,7 @@ export const VideoView = ({videoId} : VideoViewsProps)=>{
                 <div className="xl:hidden block mt-4">
                     <SuggestionsSection/>
                 </div>
-                     <CommentsSection/>
+                     <CommentsSection videoId={videoId}/>
             </div>
              <div className="hidden xl:block w-full xl:w-[380px] 2xl:w-[460px] shrink-1">
                 <SuggestionsSection/>

@@ -11,6 +11,11 @@ interface VideoPlayerProps {
   onPlay?: () => void;
 }
 
+export const VideoPlayerSkeleton = ()=>{
+  return <div className="aspect-video bg-black rounded-xl"/>
+};
+
+
 export const VideoPlayer = ({
   playbackId,
   thumbnailUrl,
@@ -19,7 +24,6 @@ export const VideoPlayer = ({
   onPlay,
 }: VideoPlayerProps) => {
   if (!playbackId) return null;
-
   return (
     <div className="relative w-full h-full">
       <MuxPlayer
