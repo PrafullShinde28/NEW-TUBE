@@ -42,6 +42,7 @@ const Page = async ({ params }: PageProps) => {
     await Promise.all([
         trpc.videos.getOne.prefetch({ id: videoId }),
         trpc.comments.getMany.prefetchInfinite({ videoId , limit : DEFAULT_LIMIT }),
+        trpc.suggestions.getMany.prefetchInfinite({videoId,limit:DEFAULT_LIMIT}),
         
     ]);
 

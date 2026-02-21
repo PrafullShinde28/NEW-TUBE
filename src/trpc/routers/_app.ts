@@ -7,7 +7,7 @@ import { videoReactionsRouter } from "@/modules/video-reactions/server/procedure
 import { subscriptionsRouter } from "@/modules/subscriptions/servers/procedure"; 
 import { commentsRouter } from "@/modules/comments/server/procedure";
 import { commentReactionsRouter } from "@/modules/comment-reactions/server/procedure";
-import { commentReactions } from "@/db/schema";
+import { suggestionRouter } from "@/modules/suggestions/server/procedure";
 
 /**
  * Root tRPC router
@@ -21,6 +21,7 @@ export const appRouter = createTRPCRouter({
    subscriptions : subscriptionsRouter ,
    videoReactions : videoReactionsRouter,
    commentReactions : commentReactionsRouter,
+   suggestions : suggestionRouter
    
 });
 
