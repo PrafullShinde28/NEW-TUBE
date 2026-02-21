@@ -10,16 +10,23 @@ import { Form , FormControl , FormField , FormItem, FormMessage } from "@/compon
 import { useForm } from "react-hook-form";
 import { comment } from "postcss";
 import { commentInsertSchema } from "@/db/schema";
+import { Value } from "@radix-ui/react-select";
 
 
 interface CommentFormProps {
     videoId : string;
-    onSuccess ? : ()=> void;
+    parentId? : string;
+    onSuccess? : ()=> void;
+    onCancel? : ()=> void,
+    variant? : "comment" | "reply";
 }
 
 export const CommentForm = ({
     videoId,
+    parentId,
     onSuccess,
+    onCancel,
+    variant = "comment",
 }: CommentFormProps) =>{
 
 const {user} = useUser();
@@ -31,6 +38,7 @@ const clerk = useClerk();
 const create = trpc.comments.create.useMutation({
     onSuccess :()=>{
         utils.comments.getMany.invalidate({videoId});
+        utils.comments.getMany.invalidate({videoId,parentId});
         form.reset();
         toast.success("Comment added.");
         onSuccess?.();
@@ -47,14 +55,23 @@ const create = trpc.comments.create.useMutation({
     const form = useForm<z.infer<typeof commentInsertSchema>>({
         resolver : zodResolver(commentInsertSchema.omit({userId:true})),
         defaultValues  :{
-            videoId,
+            parentId : parentId,
+            videoId : videoId,
             value:"",
+            
+          
+
         },
     }); 
 
     const handleSubmit = (values : z.infer<typeof commentInsertSchema>)=>{
         create.mutate(values);
-    } 
+    }
+    
+    const handleCancel = ()=>{
+        form.reset();
+        onCancel?.();
+    };
 
     
     return(
@@ -77,7 +94,11 @@ const create = trpc.comments.create.useMutation({
                      <FormControl>
                         <Textarea
                         {...field}
-                        placeholder="Add a comment"
+                        placeholder={
+                            variant === "reply"
+                            ? "Reply to this comment..."
+                            : "Add a comment"
+                        }
                         className="resize-none bg-transparent overflow-hidden min-h-0"
                         />
                       </FormControl>
@@ -86,12 +107,17 @@ const create = trpc.comments.create.useMutation({
                     )}
                 />
             <div className="justify-end gap-2 mt-2 flex">
+                {onCancel && (
+                    <Button variant="ghost" type="button" onClick={handleCancel}>
+                        cancel
+                    </Button>
+                )}
                 <Button
                 disabled={create.isPending}
                 type="submit"
                 size="sm"
                 >
-                    Comment
+                    {variant ==="reply" ? "Reply" : "Comment"}
                 </Button>
              </div>
             </div>
