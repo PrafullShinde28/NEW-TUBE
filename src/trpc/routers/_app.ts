@@ -8,6 +8,7 @@ import { subscriptionsRouter } from "@/modules/subscriptions/servers/procedure";
 import { commentsRouter } from "@/modules/comments/server/procedure";
 import { commentReactionsRouter } from "@/modules/comment-reactions/server/procedure";
 import { suggestionRouter } from "@/modules/suggestions/server/procedure";
+import { searchRouter } from "@/modules/search/server/procedure";
 
 /**
  * Root tRPC router
@@ -15,13 +16,15 @@ import { suggestionRouter } from "@/modules/suggestions/server/procedure";
 export const appRouter = createTRPCRouter({
    studio: studioRouter,
    videos : videosRouter,
+   search : searchRouter,
    comments : commentsRouter,
    categories : categoriesRouter,
    videoViews : videoViewsRouter,
    subscriptions : subscriptionsRouter ,
    videoReactions : videoReactionsRouter,
    commentReactions : commentReactionsRouter,
-   suggestions : suggestionRouter
+   suggestions : suggestionRouter,
+ 
    
 });
 
