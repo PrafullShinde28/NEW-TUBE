@@ -293,11 +293,7 @@ const FormSectionSuspence = ({ videoId }: FormSectionProps) => {
     });
   };
 
-  const fullUrl = `${
-    APP_URL
-      ? APP_URL
-      : "http://localhost:3000"
-  }/videos/${video[0]?.id}`;
+  const fullUrl = `${APP_URL}/videos/${video[0]?.id}`;
 
   const [isCopied, setIsCopied] = useState(false);
 
