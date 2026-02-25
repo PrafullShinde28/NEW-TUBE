@@ -1,7 +1,7 @@
 "use client"
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem  } from "@/components/ui/sidebar";
-import { HomeIcon, PlaySquareIcon } from "lucide-react"
+import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react"
 import Link from "next/link";
 
 import { useAuth, useClerk } from "@clerk/nextjs";
@@ -16,14 +16,14 @@ const items = [
     },
     {
         title : "Subscriptions",
-        url : "/feed/subscriptions",
+        url : "/feed/subscribed",
         icon : PlaySquareIcon,
         auth : true ,
     },
      {
         title : "Trending",
         url : "/feed/trending",
-        icon : PlaySquareIcon
+        icon : FlameIcon,
     },
 ];
 

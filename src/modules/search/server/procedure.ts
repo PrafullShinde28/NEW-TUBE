@@ -7,8 +7,7 @@ import { TRPCError } from "@trpc/server";
 
 export const searchRouter = createTRPCRouter({
     
-    
-    getMany : baseProcedure.input(
+     getMany : baseProcedure.input(
         z.object({
             query : z.string().nullish(),
             categoryId : z.string().uuid().nullish(),
@@ -41,6 +40,7 @@ export const searchRouter = createTRPCRouter({
                             .from(videos)
                             .innerJoin(users,eq(videos.userId,users.id))
                             .where(and(
+                            eq(videos.visibility,"public"),
                             like(videos.title,`%${query}%`),
                             categoryId ? eq(videos.categoryId,categoryId) : undefined,
                             cursor ? or(
@@ -72,5 +72,5 @@ export const searchRouter = createTRPCRouter({
             items,
             nextCursor
         }
-    })
+    }),
 });
