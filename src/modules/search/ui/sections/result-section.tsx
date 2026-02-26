@@ -47,7 +47,6 @@ const ResultSectionSuspense = ({
   query,
   categoryId,
 }: ResultSectionProps) => {
-  const isMobile = useIsMobile();
 
   const [result , resultQuery] = trpc.search.getMany.useSuspenseInfiniteQuery(
     {
@@ -62,23 +61,23 @@ const ResultSectionSuspense = ({
 
   return (
     <>
-      {isMobile ? (
-        <div className="flex flex-col gap-4 gap-y-10">
+    
+        <div className="flex flex-col gap-4 gap-y-10 md:hidden">
           {result.pages
             .flatMap((page) => page.items)
             .map((video) => (
               <VideoGridCard key={video.id} data={video} />
             ))}
         </div>
-      ) : (
-        <div className="flex flex-col gap-4">
+     
+        <div className="hidden flex-col gap-4 md:flex">
           {result.pages
             .flatMap((page) => page.items)
             .map((video) => (
               <VideoRowCard key={video.id} data={video} />
             ))}
         </div>
-      )}
+    
       <InfiniteScroll 
       hasNextPage={resultQuery.hasNextPage}
       isFetchingNextPage = {resultQuery.isFetchingNextPage}

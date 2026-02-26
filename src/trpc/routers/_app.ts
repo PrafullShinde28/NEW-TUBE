@@ -9,6 +9,7 @@ import { commentsRouter } from "@/modules/comments/server/procedure";
 import { commentReactionsRouter } from "@/modules/comment-reactions/server/procedure";
 import { suggestionRouter } from "@/modules/suggestions/server/procedure";
 import { searchRouter } from "@/modules/search/server/procedure";
+import { playlistRouter } from "@/modules/playlists/server/procedures";
 
 /**
  * Root tRPC router
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
    videos : videosRouter,
    search : searchRouter,
    comments : commentsRouter,
+   playlists : playlistRouter,
    categories : categoriesRouter,
    videoViews : videoViewsRouter,
    subscriptions : subscriptionsRouter ,
