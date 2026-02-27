@@ -8,7 +8,7 @@ import {
 
 export const reactionType = pgEnum("reaction_type",["like","dislike"]);
 
-export const playlistVideos = pgTable("playlitst_videos",{
+export const playlistVideos = pgTable("playlist_videos",{
     playlistId : uuid("playlist_id").references(()=>playlist.id,{onDelete:"cascade"}).notNull(),
     videoId : uuid("video_id").references(()=>videos.id,{onDelete:"cascade"}).notNull(),
     createdAt : timestamp("created_at").defaultNow().notNull(),
