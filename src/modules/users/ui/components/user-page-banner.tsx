@@ -4,6 +4,8 @@ import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Edit2Icon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BannerUploadModal } from "./banner-upload-modal";
+import { useState } from "react";
 
 interface UserPageBannerProps {
     user : UserGetOneOutput;
@@ -16,9 +18,15 @@ export const UserPageBanneSkeleton =()=>{
 export const UserPageBanner = ({ user }: UserPageBannerProps) => {
   //TODO : add upload banner modal
   const { userId } = useAuth();
+  const [isBannerUploadModalOpen,setIsBannerUploadModalOpen] = useState(false);
 
   return (
     <div className="relative group">
+      <BannerUploadModal 
+       userId={user.id}
+       open={isBannerUploadModalOpen}
+       onOpenChange={setIsBannerUploadModalOpen}
+      />
       <div
         className={cn(
           "w-full h-[180px] md:h-[220px] rounded-xl overflow-hidden bg-gray-100",
@@ -32,6 +40,7 @@ export const UserPageBanner = ({ user }: UserPageBannerProps) => {
       >
         {user.clerkId === userId && (
           <Button
+            onClick={()=>setIsBannerUploadModalOpen(true)}
             type="button"
             size="icon"
             className="absolute top-4 right-4 rounded-full bg-black/50 hover:bg-black/70 

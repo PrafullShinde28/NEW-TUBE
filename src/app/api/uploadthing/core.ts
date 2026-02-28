@@ -5,11 +5,59 @@ import { db } from "@/db";
 import {users, videos} from "@/db/schema";
 import { eq , and } from "drizzle-orm";
 import { UploadThingError, UTApi } from "uploadthing/server";
-import { th } from "date-fns/locale";
 
 const f = createUploadthing();
 
 export const ourFileRouter = {
+ 
+  
+  bannerUploader: f({
+    image: {
+      
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+    },
+  })
+    .middleware(async () => {
+      
+      const { userId : clerkUserId } = await auth();
+
+      if (!clerkUserId) throw new UploadThingError("Unauthorized");
+   
+      const [existinguser] = await db
+                            .select()
+                            .from(users)
+                            .where( eq(users.clerkId, clerkUserId))
+    
+    if(!existinguser) throw new UploadThingError("Unauthorized");
+
+     if(existinguser.bannerKey){
+      const utapi = new UTApi();
+      await utapi.deleteFiles(existinguser.bannerKey);
+
+                     await db
+                            .update(users)
+                            .set({bannerKey : null , bannerUrl : null})
+                            .where( eq(users.id, existinguser.id))
+          }
+
+          return{userId : existinguser.id}
+    
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+     
+      await db
+             .update(users)
+             .set({
+              bannerUrl: file.url,
+              bannerKey: file.key,
+             })
+             .where(and(
+              eq(users.id, metadata.userId),
+             )); 
+
+      return { uploadedBy: metadata.userId };
+    }),
 
   thumbnailUploader: f({
     image: {
