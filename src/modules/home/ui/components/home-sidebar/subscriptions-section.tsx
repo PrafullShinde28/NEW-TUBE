@@ -75,7 +75,7 @@ export const SubscriptionsSection = () =>{
                             asChild
                             isActive={pathName === "/subscriptions"}
                             >
-                              <Link 
+                              <Link prefetch 
                                href={"/subscriptions"}
                                className="flex item-center gap-4"
                               >

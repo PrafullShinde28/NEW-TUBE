@@ -63,14 +63,14 @@ export const VideoInfo = ({ data, onRemove }: VideoInfoProps) => {
       <div className="flex flex-1 min-w-0">
         <div className="flex flex-col flex-1 min-w-0">
           {/* Title */}
-          <Link href={`/videos/${data.id}`}>
+          <Link prefetch href={`/videos/${data.id}`}>
             <h3 className="text-sm font-medium leading-[1.2] line-clamp-2">
               {data.title}
             </h3>
           </Link>
 
           {/* Author */}
-          <Link href={`/users/${data.user.id}`}>
+          <Link prefetch href={`/users/${data.user.id}`}>
             <span className="text-xs text-muted-foreground leading-[1.2]">
               {data.user.name}
             </span>
